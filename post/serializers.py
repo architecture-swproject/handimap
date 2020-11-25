@@ -2,6 +2,7 @@ from rest_framework import serializers
 from . import models
 
 class ReviewSerializer(serializers.ModelSerializer):
+    user_id= serializers.CharField(source = "user_id.username", read_only=True)
     class Meta:
         model = models.Review
         fields = '__all__'
@@ -16,3 +17,5 @@ class StarSerializer(serializers.ModelSerializer):
 class CarrierSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Carrier
+        fields = '__all__'
+        read_only_fields = ["user_id"]

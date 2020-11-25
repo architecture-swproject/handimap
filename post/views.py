@@ -14,6 +14,13 @@ class ReviewElevList(generics.ListCreateAPIView):
     serializer_class = serializers.ReviewSerializer
     queryset = models.Review.objects.all()
 
+    def get_queryset(self):
+        qs = self.queryset
+        pk = self.kwargs.get('pk')
+        cross = get_object_or_404(Elevator, pk=pk)
+        qs = qs.filter(elevator_id = cross)
+        return qs
+
     def perform_create(self, serializer):
         images_data = self.request.FILES
         pk = self.kwargs.get('pk')
@@ -25,6 +32,13 @@ class ReviewElevList(generics.ListCreateAPIView):
 class ReviewCrossList(generics.ListCreateAPIView):
     serializer_class = serializers.ReviewSerializer
     queryset = models.Review.objects.all()
+
+    def get_queryset(self):
+        qs = self.queryset
+        pk = self.kwargs.get('pk')
+        cross = get_object_or_404(CrossPass, pk=pk)
+        qs = qs.filter(crosspass_id = cross)
+        return qs
 
     def perform_create(self, serializer):
         images_data = self.request.FILES
@@ -86,10 +100,14 @@ class StarCrossCreate(APIView):
                     serializer.save(crosspass_id = cross, user_id = user)
                     return Response(str(pk) + "번 점수를 주셨습니다.", status = status.HTTP_201_CREATED)
 
-class Carrier(generics.ListCreateAPIView):
-    queryset = models.Carrier
+class CarrierView(generics.ListCreateAPIView):
+    queryset = models.Carrier.objects.all()
     serializer_class = serializers.CarrierSerializer
 
+    def get_queryset(self):
+        qs = self.filter_queryset(super().get_queryset())
+        qs = qs.filter(user_id = self.request.user)
+        return qs
     def perform_create(self, serializer):
         serializer.save(user_id=self.request.user)
 

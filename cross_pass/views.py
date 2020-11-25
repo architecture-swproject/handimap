@@ -6,11 +6,23 @@ from django.http import HttpResponse
 from . import models, serializers
 from rest_framework import generics, viewsets, mixins, status
 from django.db.models import Avg
+from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet
+
 # Create your models here.
+
+
+class CrossFilter(FilterSet):
+    class Meta:
+        model = models.CrossPass
+        fields = {'ovrpsNm':['contains']}
 
 class CrossList(generics.ListAPIView):
     queryset = models.CrossPass.objects.annotate(star_num = Avg("star__num")).all()
     serializer_class = serializers.CrossListSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    search_fields = ['ovrpsNm', 'rdnmadr']
+
     def get(self, request, *args, **kargs):
         # mixins 상속으로 손쉽게 리스트 구현
         return self.list(self, request, *args, **kargs)

@@ -36,8 +36,10 @@ class Star(models.Model):
 
 class Carrier(models.Model):
     carrier_nm = models.CharField(max_length=100)
+    type = models.CharField(max_length=20, null = True)
     weight = models.FloatField()
-    size = models.CharField(max_length=10)
+    width = models.FloatField(default=600)
+    length = models.FloatField(default=1200)
     user_id = models.OneToOneField(User, models.CASCADE)
     created_at = models.DateTimeField(auto_now_add= True)
     updated_at = models.DateTimeField(auto_now=True)

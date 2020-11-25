@@ -8,11 +8,20 @@ from rest_framework import generics, viewsets, mixins, status
 import decimal
 import math
 from django.db.models import Avg
-# Create your models here.
+from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet
 
+# Create your models here.
+class ElevFilter(FilterSet):
+    class Meta:
+        model = models.Elevator
+        fields = {'sigungu':['exact']}
 class ElevList(generics.ListAPIView):
     queryset = models.Elevator.objects.annotate(star_num = Avg("star__num")).all()
     serializer_class = serializers.ElevListSerializer
+    filterset_class = ElevFilter
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    search_fields=["address1", "address2", "buldNm"]
     def get(self, request, *args, **kargs):
         return self.list(self, request, *args, **kargs)
 
@@ -53,7 +62,7 @@ def elevdata(request):
             for data in allData:
                 elevators = models.Elevator.objects.filter(elvtrMgtNo1 = data["elvtrMgtNo1"])
                 elevators = elevators.filter(elvtrMgtNo2 = data["elvtrMgtNo2"])
-                if False:
+                if len(elevators) > 0:
                     continue
                 else:
                     elevator = models.Elevator()
